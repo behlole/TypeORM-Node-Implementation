@@ -1,13 +1,15 @@
 import {createConnection} from "typeorm";
+import {UserEntity} from "./models/User";
 
 const conn = createConnection(
     {
         type: 'postgres',
         database: 'blog',
-        entities: ['./models/*.ts'],
+        port: 5432,
+        entities: [UserEntity],
         username: 'postgres',
         password: 'root',
         synchronize: true,
-        logging: true
+        logging: true,
     });
 export default conn;
