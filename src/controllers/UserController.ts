@@ -10,7 +10,7 @@ export default {
     },
     createUser: async (req: Request, res: Response) => {
         let {title, content} = req.body;
-        let user = await UserEntity.create({title: title, content: content})
+        let user = await UserEntity.create({title: title, content: content}).save()
         res.send({
             "user": user
         })
