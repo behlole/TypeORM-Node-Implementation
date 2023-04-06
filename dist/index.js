@@ -1,14 +1,14 @@
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+    return (mod && mod.__esModule) ? mod : {"default": mod};
 };
 var _a;
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./routes"));
 const connection_1 = __importDefault(require("./connection"));
 const router = (0, express_1.default)();
-router.use(express_1.default.urlencoded({ extended: false }));
+router.use(express_1.default.urlencoded({extended: false}));
 router.use(express_1.default.json());
 router.use('/', routes_1.default);
 router.use((req, res, next) => {
