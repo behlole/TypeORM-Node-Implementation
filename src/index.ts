@@ -1,7 +1,7 @@
 import http from 'http';
 import express, {Express, Request, Response} from 'express';
 import routes from './routes';
-import conn from "./connection";
+import connection from "./connection";
 
 const router: Express = express();
 
@@ -33,12 +33,12 @@ router.use((req, res, next) => {
 
 
 const PORT: any = process.env.PORT ?? 6060;
-conn.then((data) => {
-    console.log("Database connected")
+connection.then((data) => {
     router.listen(PORT, () => {
         console.log(`The server is running on port ${PORT}`)
     })
+
 }).catch((error) => {
     console.log(error.message)
-    console.log("Server could not be started")
 })
+

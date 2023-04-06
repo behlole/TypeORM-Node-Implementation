@@ -1,14 +1,14 @@
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : {"default": mod};
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 var _a;
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./routes"));
 const connection_1 = __importDefault(require("./connection"));
 const router = (0, express_1.default)();
-router.use(express_1.default.urlencoded({extended: false}));
+router.use(express_1.default.urlencoded({ extended: false }));
 router.use(express_1.default.json());
 router.use('/', routes_1.default);
 router.use((req, res, next) => {
@@ -31,11 +31,9 @@ router.use((req, res, next) => {
 });
 const PORT = (_a = process.env.PORT) !== null && _a !== void 0 ? _a : 6060;
 connection_1.default.then((data) => {
-    console.log("Database connected");
     router.listen(PORT, () => {
         console.log(`The server is running on port ${PORT}`);
     });
 }).catch((error) => {
     console.log(error.message);
-    console.log("Server could not be started");
 });

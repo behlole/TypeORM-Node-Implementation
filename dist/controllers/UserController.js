@@ -8,20 +8,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const User_1 = require("../models/User");
+const User_1 = __importDefault(require("../models/User"));
 exports.default = {
     getUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        let users = yield User_1.UserEntity.find();
         res.send({
-            users: users
+            "users": yield User_1.default.find()
         });
     }),
     createUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        let { title, content } = req.body;
-        let user = yield User_1.UserEntity.create({ title: title, content: content }).save();
-        res.send({
-            "user": user
-        });
+        let { username, email } = req.body;
+        if (username && email) {
+            let user = yield User_1.default.create({ email: email, username: username });
+            console.log(user);
+            yield user.save();
+            res.send({
+                "user": user,
+                "message": "User created successfully"
+            });
+        }
+        else {
+            res.send({
+                "message": "Validation failed!"
+            });
+        }
     })
 };

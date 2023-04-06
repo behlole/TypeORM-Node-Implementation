@@ -1,15 +1,14 @@
 import {createConnection} from "typeorm";
-import {UserEntity} from "./models/User";
+import User from "./models/User";
 
-const conn = createConnection(
-    {
-        type: 'postgres',
-        database: 'blog',
-        port: 5432,
-        entities: [UserEntity],
-        username: 'postgres',
-        password: 'root',
-        synchronize: true,
-        logging: true,
-    });
-export default conn;
+export default createConnection({
+    host: "localhost",
+    type: "postgres",
+    database: 'nodejsPractice',
+    port: 5432,
+    username: 'postgres',
+    password: 'root',
+    entities: [User],
+    synchronize: true,
+    logging: true,
+})
