@@ -11,7 +11,6 @@ export default {
         let {username, email} = req.body;
         if (username && email) {
             let user = await User.create({email: email, username: username});
-            console.log(user)
             await user.save();
             res.send({
                 "user": user,
