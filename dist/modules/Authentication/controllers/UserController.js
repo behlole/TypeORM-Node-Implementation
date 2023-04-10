@@ -14,20 +14,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = __importDefault(require("../models/User"));
 const UserValidator_1 = require("../utils/Validators/UserValidator");
-const RequestResponseMappings_1 = __importDefault(require("../Shared/utils/Mappings/RequestResponseMappings"));
+const RequestResponseMappings_1 = __importDefault(require("../../../Shared/utils/Mappings/RequestResponseMappings"));
 exports.default = {
     getUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return RequestResponseMappings_1.default.sendSuccessMessage(res, yield User_1.default.find());
     }),
-    createUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         let userValidationError = UserValidator_1.UserSchema.validate(req.body).error;
         if (userValidationError) {
             return RequestResponseMappings_1.default
                 .sendErrorMessage(res, userValidationError === null || userValidationError === void 0 ? void 0 : userValidationError.details);
         }
-        let user = yield User_1.default.create({ email: req.body.email, username: req.body.username });
+        let user = yield User_1.default.create({ email: req.body.email, password: req.body.password });
         yield user.save();
+        // let hasPassword=bcrypt.
         return RequestResponseMappings_1.default
             .sendSuccessMessage(res, user, "User Created Successfully");
-    })
+    }),
+    loginUser: (req, res) => {
+    }
 };

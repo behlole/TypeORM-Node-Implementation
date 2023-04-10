@@ -2,8 +2,12 @@ import http from 'http';
 import express, {Express, Request, Response} from 'express';
 import routes from './routes';
 import connection from "./connection";
+import dotenv from 'dotenv';
 
 const router: Express = express();
+
+dotenv.config();
+
 
 router.use(express.urlencoded({extended: false}));
 router.use(express.json());

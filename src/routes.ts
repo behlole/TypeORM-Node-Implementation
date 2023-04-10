@@ -1,5 +1,5 @@
 import express,{Express} from 'express';
-import userRoutes from './routes/routes';
+import userRoutes from './modules/Authentication/routes/routes';
 
 const router: Express = express();
 

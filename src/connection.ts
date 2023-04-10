@@ -1,5 +1,5 @@
 import {createConnection} from "typeorm";
-import User from "./models/User";
+import User from "./modules/Authentication/models/User";
 
 export default createConnection({
     host: "localhost",
