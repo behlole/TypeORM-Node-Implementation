@@ -15,22 +15,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = __importDefault(require("../models/User"));
 const UserValidator_1 = require("../utils/Validators/UserValidator");
 const RequestResponseMappings_1 = __importDefault(require("../../../Shared/utils/Mappings/RequestResponseMappings"));
+const UserController_1 = __importDefault(require("./UserController"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 exports.default = {
     getUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return RequestResponseMappings_1.default.sendSuccessMessage(res, yield User_1.default.find());
     }),
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        let userValidationError = UserValidator_1.UserSchema.validate(req.body).error;
-        if (userValidationError) {
+        let userValidationError = UserController_1.default.errorValidateUserSchema(req.body);
+        if (userValidationError && "details" in userValidationError) {
             return RequestResponseMappings_1.default
-                .sendErrorMessage(res, userValidationError === null || userValidationError === void 0 ? void 0 : userValidationError.details);
+                .sendErrorMessage(res, userValidationError.details);
         }
         let user = yield User_1.default.create({ email: req.body.email, password: req.body.password });
         yield user.save();
-        // let hasPassword=bcrypt.
-        return RequestResponseMappings_1.default
-            .sendSuccessMessage(res, user, "User Created Successfully");
+        return UserController_1.default.loginUser(req, res, user);
     }),
-    loginUser: (req, res) => {
+    loginUser: (req, res, user = null) => {
+        let secretKey = process.env.JWT_SECRET_KEY;
+        if (user && secretKey) {
+            let token = jsonwebtoken_1.default.sign({ email: user.email, password: user.password }, secretKey);
+            return RequestResponseMappings_1.default.sendSuccessMessage(res, {
+                token: token,
+                user: user
+            });
+        }
+        else if (secretKey) {
+        }
+        return RequestResponseMappings_1.default.sendErrorMessage(res);
+    },
+    errorValidateUserSchema: (incomingUser) => {
+        let userValidationError = UserValidator_1.UserSchema.validate(incomingUser).error;
+        if (!userValidationError) {
+            return false;
+        }
+        return userValidationError;
     }
 };

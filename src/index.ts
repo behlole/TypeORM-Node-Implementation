@@ -1,5 +1,5 @@
 import http from 'http';
-import express, {Express, Request, Response} from 'express';
+import express, {Express} from 'express';
 import routes from './routes';
 import connection from "./connection";
 import dotenv from 'dotenv';
