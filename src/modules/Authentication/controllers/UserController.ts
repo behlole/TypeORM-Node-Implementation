@@ -4,9 +4,8 @@ import {UserSchema} from "../utils/Validators/UserValidator";
 import RequestResponseMappings from "../../../Shared/utils/Mappings/RequestResponseMappings";
 import UserController from "./UserController";
 import jsonwebtoken from 'jsonwebtoken';
-import dotenv from "dotenv";
 import Joi from "joi";
-
+import bcrypt from 'bcrypt';
 
 interface _User {
     email: string;
@@ -26,22 +25,18 @@ export default {
                     userValidationError.details
                 )
         }
-        let user = await User.create({email: req.body.email, password: req.body.password});
+        let hashPassword = bcrypt.hashSync(req.body.password, process.env.JWT_SECRET_KEY!)
+        let user = await User.create({email: req.body.email, password: hashPassword});
         await user.save();
         return UserController.loginUser(req, res, user);
     },
-    loginUser: (req: Request, res: Response, user: _User | null = null) => {
-        let secretKey = process.env.JWT_SECRET_KEY;
-        if (user && secretKey) {
-            let token = jsonwebtoken.sign(
-                {email: user.email, password: user.password},
-                secretKey);
-            return RequestResponseMappings.sendSuccessMessage(res, {
-                token: token,
-                user: user
-            })
-        } else if (secretKey) {
-
+    loginUser: async (req: Request, res: Response, user: _User | null = null) => {
+        if (user) {
+            return UserController.sendTokenWithPayload(res, user);
+        }
+        user = await User.findOneBy({email: req.body.email});
+        if (user && bcrypt.compareSync(req.body.password, user.password)) {
+            return UserController.sendTokenWithPayload(res, user);
         }
         return RequestResponseMappings.sendErrorMessage(res)
     },
@@ -51,5 +46,13 @@ export default {
             return false
         }
         return userValidationError;
+    },
+    sendTokenWithPayload: (res: Response, user: _User) => {
+        return RequestResponseMappings.sendSuccessMessage(res, {
+            token: jsonwebtoken.sign(
+                {email: user.email, password: user.password},
+                process.env.JWT_SECRET_KEY!),
+            user: user
+        })
     }
 }
