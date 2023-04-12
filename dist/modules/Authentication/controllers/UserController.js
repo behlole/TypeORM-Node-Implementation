@@ -17,6 +17,7 @@ const UserValidator_1 = require("../utils/Validators/UserValidator");
 const RequestResponseMappings_1 = __importDefault(require("../../../Shared/utils/Mappings/RequestResponseMappings"));
 const UserController_1 = __importDefault(require("./UserController"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 exports.default = {
     getUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return RequestResponseMappings_1.default.sendSuccessMessage(res, yield User_1.default.find());
@@ -27,28 +28,37 @@ exports.default = {
             return RequestResponseMappings_1.default
                 .sendErrorMessage(res, userValidationError.details);
         }
-        let user = yield User_1.default.create({ email: req.body.email, password: req.body.password });
-        yield user.save();
-        return UserController_1.default.loginUser(req, res, user);
-    }),
-    loginUser: (req, res, user = null) => {
-        let secretKey = process.env.JWT_SECRET_KEY;
-        if (user && secretKey) {
-            let token = jsonwebtoken_1.default.sign({ email: user.email, password: user.password }, secretKey);
-            return RequestResponseMappings_1.default.sendSuccessMessage(res, {
-                token: token,
-                user: user
-            });
-        }
-        else if (secretKey) {
+        let salt = process.env.JWT_SECRET_KEY;
+        if (salt) {
+            console.log("hello");
+            let hashPassword = bcrypt_1.default.hashSync(req.body.password, 10);
+            let user = yield User_1.default.create({ email: req.body.email, password: hashPassword });
+            yield user.save();
+            // return UserController.loginUser(req, res, user);
         }
         return RequestResponseMappings_1.default.sendErrorMessage(res);
-    },
+    }),
+    loginUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        // if (user) {
+        //     return UserController.sendTokenWithPayload(res, user);
+        // }
+        let user = yield User_1.default.findOneBy({ email: req.body.email });
+        if (user && bcrypt_1.default.compareSync(req.body.password, user.password)) {
+            return UserController_1.default.sendTokenWithPayload(res, user);
+        }
+        return RequestResponseMappings_1.default.sendErrorMessage(res);
+    }),
     errorValidateUserSchema: (incomingUser) => {
         let userValidationError = UserValidator_1.UserSchema.validate(incomingUser).error;
         if (!userValidationError) {
-            return false;
+            return;
         }
         return userValidationError;
+    },
+    sendTokenWithPayload: (res, user) => {
+        return RequestResponseMappings_1.default.sendSuccessMessage(res, {
+            token: jsonwebtoken_1.default.sign({ email: user.email, password: user.password }, process.env.JWT_SECRET_KEY),
+            user: user
+        });
     }
 };

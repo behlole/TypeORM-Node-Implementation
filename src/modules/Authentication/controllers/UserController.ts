@@ -17,7 +17,7 @@ export default {
         return RequestResponseMappings.sendSuccessMessage(res, await User.find())
     },
     register: async (req: Request, res: Response) => {
-        let userValidationError: Boolean | Joi.ValidationError | undefined = UserController.errorValidateUserSchema(req.body)
+        let userValidationError:  Joi.ValidationError | undefined = UserController.errorValidateUserSchema(req.body)
         if (userValidationError && "details" in userValidationError) {
             return RequestResponseMappings
                 .sendErrorMessage(
@@ -25,25 +25,31 @@ export default {
                     userValidationError.details
                 )
         }
-        let hashPassword = bcrypt.hashSync(req.body.password, process.env.JWT_SECRET_KEY!)
-        let user = await User.create({email: req.body.email, password: hashPassword});
-        await user.save();
-        return UserController.loginUser(req, res, user);
-    },
-    loginUser: async (req: Request, res: Response, user: _User | null = null) => {
-        if (user) {
-            return UserController.sendTokenWithPayload(res, user);
+        let salt=process.env.JWT_SECRET_KEY;
+        if (salt){
+            console.log("hello")
+
+            let hashPassword = bcrypt.hashSync(req.body.password, 10)
+            let user = await User.create({email: req.body.email, password: hashPassword});
+            await user.save();
+            // return UserController.loginUser(req, res, user);
         }
-        user = await User.findOneBy({email: req.body.email});
+        return RequestResponseMappings.sendErrorMessage(res)
+    },
+    loginUser: async (req: Request, res: Response) => {
+        // if (user) {
+        //     return UserController.sendTokenWithPayload(res, user);
+        // }
+        let user = await User.findOneBy({email: req.body.email});
         if (user && bcrypt.compareSync(req.body.password, user.password)) {
             return UserController.sendTokenWithPayload(res, user);
         }
         return RequestResponseMappings.sendErrorMessage(res)
     },
-    errorValidateUserSchema: (incomingUser: any): Boolean | Joi.ValidationError | undefined => {
+    errorValidateUserSchema: (incomingUser: any):  Joi.ValidationError | undefined => {
         let userValidationError = UserSchema.validate(incomingUser).error
         if (!userValidationError) {
-            return false
+            return
         }
         return userValidationError;
     },

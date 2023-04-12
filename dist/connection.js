@@ -8,7 +8,7 @@ const User_1 = __importDefault(require("./modules/Authentication/models/User"));
 exports.default = (0, typeorm_1.createConnection)({
     host: "localhost",
     type: "postgres",
-    database: 'nodejsPractice',
+    database: 'blog',
     port: 5432,
     username: 'postgres',
     password: 'root',

@@ -4,7 +4,7 @@ import User from "./modules/Authentication/models/User";
 export default createConnection({
     host: "localhost",
     type: "postgres",
-    database: 'nodejsPractice',
+    database: 'blog',
     port: 5432,
     username: 'postgres',
     password: 'root',
