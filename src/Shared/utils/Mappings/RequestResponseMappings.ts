@@ -3,7 +3,7 @@ import {Response} from "express";
 export default {
     sendSuccessMessage: (
         res: Response,
-        body = {},
+        body:any = {},
         message: string = "Action Performed Successfully",
         status: number = 200,
     ) => {

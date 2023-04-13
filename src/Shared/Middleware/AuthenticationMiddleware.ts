@@ -4,13 +4,14 @@ import RequestResponseMappings from "../utils/Mappings/RequestResponseMappings";
 
 export default {
     isAuthentication:(req:Request,res:Response,next:NextFunction)=>{
+        try{
         let token=req.header('Authorization')?.split(' ')[1]
-        if(token){
-            let isVerified=jsonwebtoken.verify(token,process.env.JWT_SECRET_KEY!)
-            console.log(isVerified)
-            next();
+         req.body.user=jsonwebtoken.verify(token!,process.env.JWT_SECRET_KEY!);
+        console.log(req.body.user)
+         next();
+        }catch (e:any) {
+            return RequestResponseMappings.sendErrorMessage(res,{},e.message,401);
         }
-        return RequestResponseMappings.sendErrorMessage(res);
 
     }
 }

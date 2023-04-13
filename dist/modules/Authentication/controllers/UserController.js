@@ -20,28 +20,27 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 exports.default = {
     getUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        return RequestResponseMappings_1.default.sendSuccessMessage(res, yield User_1.default.find());
+        return RequestResponseMappings_1.default.sendSuccessMessage(res, yield User_1.default.findOneBy({ email: req.body.user.email }));
     }),
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        let userValidationError = UserController_1.default.errorValidateUserSchema(req.body);
-        if (userValidationError && "details" in userValidationError) {
-            return RequestResponseMappings_1.default
-                .sendErrorMessage(res, userValidationError.details);
-        }
-        let salt = process.env.JWT_SECRET_KEY;
-        if (salt) {
-            console.log("hello");
-            let hashPassword = bcrypt_1.default.hashSync(req.body.password, 10);
-            let user = yield User_1.default.create({ email: req.body.email, password: hashPassword });
+        try {
+            let userValidationError = UserController_1.default.errorValidateUserSchema(req.body);
+            if (userValidationError && "details" in userValidationError) {
+                return RequestResponseMappings_1.default
+                    .sendErrorMessage(res, userValidationError.details);
+            }
+            let user = User_1.default.create({
+                email: req.body.email,
+                password: bcrypt_1.default.hashSync(req.body.password, 10)
+            });
             yield user.save();
-            // return UserController.loginUser(req, res, user);
+            return UserController_1.default.sendTokenWithPayload(res, user);
         }
-        return RequestResponseMappings_1.default.sendErrorMessage(res);
+        catch (e) {
+            return RequestResponseMappings_1.default.sendErrorMessage(res, {}, e.message);
+        }
     }),
     loginUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        // if (user) {
-        //     return UserController.sendTokenWithPayload(res, user);
-        // }
         let user = yield User_1.default.findOneBy({ email: req.body.email });
         if (user && bcrypt_1.default.compareSync(req.body.password, user.password)) {
             return UserController_1.default.sendTokenWithPayload(res, user);
@@ -56,8 +55,10 @@ exports.default = {
         return userValidationError;
     },
     sendTokenWithPayload: (res, user) => {
+        let refreshToken = jsonwebtoken_1.default.sign({ email: user.email, password: user.password }, process.env.JWT_SECRET_KEY);
         return RequestResponseMappings_1.default.sendSuccessMessage(res, {
-            token: jsonwebtoken_1.default.sign({ email: user.email, password: user.password }, process.env.JWT_SECRET_KEY),
+            token: jsonwebtoken_1.default.sign({ email: user.email, password: user.password }, process.env.JWT_SECRET_KEY, { expiresIn: '1m' }),
+            refreshToken: refreshToken,
             user: user
         });
     }
