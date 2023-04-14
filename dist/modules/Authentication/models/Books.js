@@ -13,26 +13,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
-const Books_1 = __importDefault(require("./Books"));
-let User = class User extends typeorm_1.BaseEntity {
+const User_1 = __importDefault(require("./User"));
+let Book = class Book extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], User.prototype, "id", void 0);
+], Book.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
-], User.prototype, "email", void 0);
+], Book.prototype, "bookName", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], User.prototype, "password", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => Books_1.default, (books) => books.user),
-    __metadata("design:type", Array)
-], User.prototype, "books", void 0);
-User = __decorate([
-    (0, typeorm_1.Entity)('usersTable')
-], User);
-exports.default = User;
+    (0, typeorm_1.ManyToOne)(() => User_1.default, (user) => user.books),
+    __metadata("design:type", User_1.default)
+], Book.prototype, "user", void 0);
+Book = __decorate([
+    (0, typeorm_1.Entity)('books')
+], Book);
+exports.default = Book;

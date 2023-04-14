@@ -1,0 +1,16 @@
+import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import User from "./User";
+
+@Entity('books')
+class Book extends BaseEntity {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column({unique: true})
+    bookName: string
+
+   @ManyToOne(()=>User,(user)=>user.books)
+    user:User
+}
+
+export default Book;

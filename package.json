@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:watch": "tsc --watch",
-    "start": "nodemon dist/index.js"
+    "start": "nodemon --inspect dist/index.js"
   },
   "keywords": [],
   "author": "",

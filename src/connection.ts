@@ -1,5 +1,6 @@
 import {createConnection} from "typeorm";
 import User from "./modules/Authentication/models/User";
+import Book from "./modules/Authentication/models/Books";
 
 export default createConnection({
     host: "localhost",
@@ -8,7 +9,7 @@ export default createConnection({
     port: 5432,
     username: 'postgres',
     password: 'root',
-    entities: [User],
+    entities: [User,Book],
     synchronize: true,
     logging: true,
 })

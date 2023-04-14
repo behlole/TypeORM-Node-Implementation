@@ -7,7 +7,6 @@ export default {
         try{
         let token=req.header('Authorization')?.split(' ')[1]
          req.body.user=jsonwebtoken.verify(token!,process.env.JWT_SECRET_KEY!);
-        console.log(req.body.user)
          next();
         }catch (e:any) {
             return RequestResponseMappings.sendErrorMessage(res,{},e.message,401);

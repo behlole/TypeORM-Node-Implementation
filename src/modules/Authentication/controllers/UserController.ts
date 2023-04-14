@@ -6,6 +6,7 @@ import UserController from "./UserController";
 import jsonwebtoken from 'jsonwebtoken';
 import Joi from "joi";
 import bcrypt from 'bcrypt';
+import Book from "../models/Books";
 
 interface _User {
     email: string;
@@ -14,7 +15,18 @@ interface _User {
 
 export default {
     getUser: async (req: Request, res: Response) => {
-        return RequestResponseMappings.sendSuccessMessage(res, await User.findOneBy({email:req.body.user.email}))
+        let user=await User.findOne({
+            where:
+                {
+                    email:req.body.user.email
+                },
+            relations:
+                {
+                    books:true
+                }
+        }
+        );
+        return RequestResponseMappings.sendSuccessMessage(res, user)
     },
     register: async (req: Request, res: Response) => {
         try {
@@ -52,16 +64,11 @@ export default {
         return userValidationError;
     },
     sendTokenWithPayload: (res: Response, user: _User) => {
-        let refreshToken=jsonwebtoken.sign(
-            {email: user.email, password: user.password},
-            process.env.JWT_SECRET_KEY!)
-
         return RequestResponseMappings.sendSuccessMessage(res, {
             token: jsonwebtoken.sign(
                 {email: user.email, password: user.password},
-                process.env.JWT_SECRET_KEY!, {expiresIn:'1m'}),
-            refreshToken:refreshToken,
+                process.env.JWT_SECRET_KEY!),
             user: user
         })
-    }
+    },
 }

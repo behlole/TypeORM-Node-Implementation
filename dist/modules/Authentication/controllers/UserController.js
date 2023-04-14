@@ -20,7 +20,15 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 exports.default = {
     getUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        return RequestResponseMappings_1.default.sendSuccessMessage(res, yield User_1.default.findOneBy({ email: req.body.user.email }));
+        let user = yield User_1.default.findOne({
+            where: {
+                email: req.body.user.email
+            },
+            relations: {
+                books: true
+            }
+        });
+        return RequestResponseMappings_1.default.sendSuccessMessage(res, user);
     }),
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -55,11 +63,9 @@ exports.default = {
         return userValidationError;
     },
     sendTokenWithPayload: (res, user) => {
-        let refreshToken = jsonwebtoken_1.default.sign({ email: user.email, password: user.password }, process.env.JWT_SECRET_KEY);
         return RequestResponseMappings_1.default.sendSuccessMessage(res, {
-            token: jsonwebtoken_1.default.sign({ email: user.email, password: user.password }, process.env.JWT_SECRET_KEY, { expiresIn: '1m' }),
-            refreshToken: refreshToken,
+            token: jsonwebtoken_1.default.sign({ email: user.email, password: user.password }, process.env.JWT_SECRET_KEY),
             user: user
         });
-    }
+    },
 };
