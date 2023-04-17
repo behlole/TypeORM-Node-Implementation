@@ -2,6 +2,7 @@ import {Request, Response} from "express";
 import User from "../models/User";
 import Book from "../models/Books";
 import RequestResponseMappings from "../../../Shared/utils/Mappings/RequestResponseMappings";
+import Books from "../models/Books";
 
 export default {
     addBook:async (req: Request, res: Response) => {
@@ -11,12 +12,10 @@ export default {
         if(currentUser) {
             let books = [];
             for (const singleBook of bookNames) {
-                let book = Book.create({bookName: singleBook})
+                let book = Book.create({bookName: singleBook,user:currentUser})
                 await book.save()
                 books.push(book)
             }
-            currentUser.books=books;
-            await currentUser.save()
             return RequestResponseMappings.sendSuccessMessage(res,currentUser);
         }
         return RequestResponseMappings.sendErrorMessage(res);
@@ -32,7 +31,7 @@ export default {
                         },
                     relations:
                         {
-                            user: true
+                            user: true,
                         }
                 });
                 return RequestResponseMappings.sendSuccessMessage(res, book);
@@ -49,5 +48,4 @@ export default {
             return RequestResponseMappings.sendErrorMessage(res,e.message)
         }
     },
-
 }

@@ -21,7 +21,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Book.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Book.prototype, "bookName", void 0);
 __decorate([

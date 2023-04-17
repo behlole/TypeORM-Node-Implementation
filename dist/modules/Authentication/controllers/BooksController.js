@@ -23,12 +23,10 @@ exports.default = {
         if (currentUser) {
             let books = [];
             for (const singleBook of bookNames) {
-                let book = Books_1.default.create({ bookName: singleBook });
+                let book = Books_1.default.create({ bookName: singleBook, user: currentUser });
                 yield book.save();
                 books.push(book);
             }
-            currentUser.books = books;
-            yield currentUser.save();
             return RequestResponseMappings_1.default.sendSuccessMessage(res, currentUser);
         }
         return RequestResponseMappings_1.default.sendErrorMessage(res);
@@ -41,7 +39,7 @@ exports.default = {
                         id: parseInt(req.params.id)
                     },
                     relations: {
-                        user: true
+                        user: true,
                     }
                 });
                 return RequestResponseMappings_1.default.sendSuccessMessage(res, book);

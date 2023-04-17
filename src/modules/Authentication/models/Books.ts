@@ -6,7 +6,7 @@ class Book extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({unique: true})
+    @Column()
     bookName: string
 
    @ManyToOne(()=>User,(user)=>user.books)
