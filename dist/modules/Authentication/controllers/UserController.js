@@ -31,6 +31,7 @@ exports.default = {
         return RequestResponseMappings_1.default.sendSuccessMessage(res, user);
     }),
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        debugger;
         try {
             let userValidationError = UserController_1.default.errorValidateUserSchema(req.body);
             if (userValidationError && "details" in userValidationError) {
@@ -49,6 +50,7 @@ exports.default = {
         }
     }),
     loginUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log("hell");
         let user = yield User_1.default.findOneBy({ email: req.body.email });
         if (user && bcrypt_1.default.compareSync(req.body.password, user.password)) {
             return UserController_1.default.sendTokenWithPayload(res, user);

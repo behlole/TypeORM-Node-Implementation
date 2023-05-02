@@ -29,9 +29,10 @@ export default {
         return RequestResponseMappings.sendSuccessMessage(res, user)
     },
     register: async (req: Request, res: Response) => {
+        debugger;
         try {
             let userValidationError: Joi.ValidationError | undefined = UserController.errorValidateUserSchema(req.body)
-            if (userValidationError && "details" in userValidationError) {
+            if (userValidationError && "detail" in userValidationError) {
                 return RequestResponseMappings
                     .sendErrorMessage(
                         res,
@@ -50,6 +51,7 @@ export default {
         }
     },
     loginUser: async (req: Request, res: Response) => {
+        console.log("hell");
         let user = await User.findOneBy({email: req.body.email});
         if (user && bcrypt.compareSync(req.body.password, user.password)) {
             return UserController.sendTokenWithPayload(res, user);
